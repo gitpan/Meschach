@@ -759,34 +759,31 @@ int shrink_to_effective_size_px( PERM* inperm ) {
 }
 
 
-																/* Check that pdl is a "trivial" one : */
-																/* Must correspond to consecutive */
-																/* memory locations. */ 
+																/* Check that pdl is a trivial one */ 
 int not_simple( pdl *a ){
 	int i,k;
 
 	/* HERE There's a problem; 
      Remove next statement as soon as incs mystery clears.
-		 Probably with PDL-1.04. ... Nope, not yet.
+		 Probably with PDL-1.04.
 		 */
 	 return(0); 
 
 	for(k=0, i=1; k<a->ndims; k++){
 		if( a->incs[k] != i ){
 
-																/* For Debug Only */
-			printf(" non-simple : 	incs[%d]==%d!=%d\n",
+																/* For debug only */
+/*			printf(" non-simple : 	incs[%d]==%d!=%d\n",
 							 k,a->incs[k],i);
  			p_pdl(a);
-
+*/
 			return(k+1);
 		}
 		i *= a->dims[k];
 	}
-																/* For Debug Only */
-	if( a->offs) printf(" non-simple : offs : %d\n",
+/*	if(mespdl_verbose && a->offs) printf(" non-simple : offs : %d\n",
 																			 a->offs);
-
+*/
 	return( - a->offs );
 }
 
@@ -823,23 +820,55 @@ int set_dims(pdl* outpdl,int nd,...){
 	va_end(ap);
 	if(mespdl_verbose)  printf("\n");
 
-	if(outpdl->ndims != nd) {
+	if( outpdl->ndims != nd ) {
 
+		pdl_setdims(outpdl,d, nd, (int*)NULL) ;
+
+/*		if(mespdl_verbose)
+			printf("### Free outpdl->dims  %p \n", outpdl->dims);
+		free(outpdl->dims); 
+		outpdl->dims= d;
+		outpdl->ndims= nd;
+
+
+		if( (int*)NULL == (outpdl->incs= 
+				 (int*)realloc( (char*)outpdl->incs, nd*sizeof(int)))
+			 ) croak("set_dims fails upon incs "); 
+		if(mespdl_verbose)
+			printf("### Realloc outpdl->incs  %p \n", outpdl->incs);
+*/
 		r= 2;
 
 	} else {
-		
-		for( i=0; i<nd; i++ )
-			if (outpdl->dims[i] != d[i] ){
-				r= 1;
-				break;
-			}
-	}
-	if( r )	pdl_setdims(outpdl,d, nd, (int*)NULL) ;
 
-	if(mespdl_verbose)	printf("### Free d  %p \n", d);
-	free(d); 
-	
+		pdl_setdims(outpdl,d, nd, (int*)NULL);
+		r = 1;
+		/*
+		for(i=0; i<nd; i++)
+			if (outpdl->dims[i] != d[i] ){
+				outpdl->dims[i] = d[i];
+					if(mespdl_verbose)  {
+						printf("X"); fflush(stdout); 
+					}
+				r = 1;
+			}
+		*/
+	}
+
+/*	if(r)
+		for( i=0, j=1; i<nd; i++ ){
+			outpdl->incs[i]= j;
+			j*=d[i];
+		}
+*/
+/*	if(r!=2) {
+*/
+		if(mespdl_verbose)
+			printf("### Free d  %p \n", d);
+		free(d); 
+/*	}
+*/		
+
 	return(r);
 	
 

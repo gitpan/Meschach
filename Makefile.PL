@@ -8,14 +8,17 @@ use ExtUtils::MakeMaker;
 $Verbose = 1;
 
 WriteMakefile(
-    'NAME'	=> 'PDL::Meschach',
+    'NAME'				 => 'PDL::Meschach',
+		'DISTNAME' 		 => 'Meschach',
     'VERSION_FROM' => 'Meschach.pm', 
 		'OBJECT'			 => 'mespdl.o p_funcs.o Meschach.o',
-    'PM'           => {'Meschach.pm' => '$(INST_LIBDIR)/Meschach.pm'},
-    'LIBS'	=> ['-Lmeschach-1.2 -lmes','-lm'],
+    'PM'					 => {'Meschach.pm' => '$(INST_LIBDIR)/Meschach.pm'},
+    'LIBS'				 => ['-Lmeschach-1.2 -lmes','-lm'],
 		'TYPEMAPS'     => [PDL_TYPEMAP], 
-    'DEFINE'	=> '',
-    'INC'	=> '-Imeschach-1.2 '.PDL_INCLUDE,
-    'clean'       => {'FILES'  => 'mespdl.o p_funcs.o Meschach.o'},			
+    'DEFINE'			 => '',
+    'INC'				   => '-Imeschach-1.2 '.PDL_INCLUDE,
+		'NORECURS'     => 'true',
+    'clean'        => {'FILES'  => 'mespdl.o p_funcs.o Meschach.o'},
+    'dist'         => { COMPRESS => "gzip -9f" },
 );
 

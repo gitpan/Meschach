@@ -1,4 +1,4 @@
-#!/usr/local/bin/perl  -I../../blib/lib -I../../blib/lib/PDL -I../../blib/arch/auto/PDL/Core -I../../blib/arch/auto/PDL/Io -I./blib/arch/auto/Meschach -I./test
+#!/usr/local/bin/perl -I./blib/arch -I./blib/lib -I/usr/local/lib/perl5/next/5.003 -I/usr/local/lib/perl5 -I./tests
 
 # Before `make install' is performed this script should be runnable with
 # `make test'. After `make install' it should work as `perl test.pl'
@@ -13,7 +13,7 @@ END {print "not ok 1\n" unless $loaded;}
 
 use PDL;
 # use Meschach;
-use Meschach qw( :All );
+use PDL::Meschach qw( :All );
 
 my $show_test = ( $ARGV[0] =~ /v/i ) ;
 gset_verbose(0);
@@ -29,7 +29,6 @@ sub p { print(@_); }
 # (correspondingly "not ok 13") depending on the success of chunk 13
 # of the test code):
 
-gset_verbose(0) ;
 
 sub anyeq { ("$_[0]" eq "$_[1]") || ($_[0] == $_[1]); }
 
@@ -128,7 +127,6 @@ foreach $coerce (0,1) {
 # Tests 12 - 13
 $c= 1.25 * float(sequence(7));
 
-# gset_verbose(1);
 foreach $coerce (0,1) {
 
 	$b = long(ones(1));
@@ -154,7 +152,7 @@ foreach $coerce (0,1) {
 	$b = long(ones(1));
 	to_fro_px( $b, $c, $coerce );
 
-	print "$coerce : float to long/ushort\n$c\n$b\n" unless 
+	print "coerce $coerce : float to long/ushort\n$c\n$b\n" unless 
 		ckeq(' min( $b - $c ) == 0 ', 1 );
 }
 
@@ -162,31 +160,31 @@ foreach $coerce (0,1) {
 
 #################### Matrix Operations ####################
 
-$a= double(ones(3,2));
+$a= double(ones(1,6));
 $b= double(ones(3,3));
 $c= double(ones(2,3));
-
 mm_($a,$b,$c,0);
+# p($a);
 
-ckeq(' ${$$a{Dims}}[0] ',2);
-ckeq(' ${$$a{Dims}}[1] ',3);
+ckeq(' ${$$a{Dims}}[0] ',2);		# 16
+ckeq(' ${$$a{Dims}}[1] ',3);		# 17
 
 $a= "toto";
 
 mm_($a,$b,$c,0);
 
-ckeq(' ${$$a{Dims}}[0] ',2);
-ckeq(' ${$$a{Dims}}[1] ',3);
+ckeq(' ${$$a{Dims}}[0] ',2);		# 18
+ckeq(' ${$$a{Dims}}[1] ',3);		# 19
 
-################# More Matrix Operations ###################
-ckeq('do "testpow.pm"',1);
-ckeq('do "testrand.pm"',1);
-ckeq('do "testdiag.pm"',1);  
-ckeq('do "testid.pm"',1);
-ckeq('do "testlu.pm"',1);
-ckeq('do "testch.pm"',1);
-ckeq('do "testqr.pm"',1);
-ckeq('do "testeig.pm"',1);
-ckeq('do "testsvd.pm"',1);
+################## More Matrix Operations ###################
+ckeq('do "testpow.pm"',1);			# 20
+ckeq('do "testrand.pm"',1);			# 21
+ckeq('do "testdiag.pm"',1);			# 22
+ckeq('do "testid.pm"',1);				# 23
+ckeq('do "testlu.pm"',1);				# 24
+ckeq('do "testch.pm"',1);				# 25
+ckeq('do "testqr.pm"',1);				# 26
+ckeq('do "testeig.pm"',1);			# 27
+ckeq('do "testsvd.pm"',1);			# 28
 
 print"\n";

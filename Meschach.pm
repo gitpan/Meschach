@@ -1,4 +1,4 @@
-package Meschach;
+package PDL::Meschach;
 
 # What are those for ?
 # use strict;
@@ -10,29 +10,31 @@ use PDL::Core;
 require Exporter;
 require DynaLoader;
 
+$VERSION = '0.03';
+
 @ISA = qw(Exporter DynaLoader);
 
 
 @EXPORT_OK = qw( ident diag_ diag ut_ ut lt_ lt mrand srand
              inv inv_ mpow mpow_ mm_
              chfac_ chsolve_ chsolve 
-             qrfac_ qrsolve_ 
-             lufac_  lusolve_ lusolve 
+             qrfac_ qrsolve_ qrsolve qrcond
+             lufac_  lusolve_ lusolve lucond
              symmeig_ symmeig svd_ svd
              ppdl redd tomat gset_verbose to_fro_m to_fro_v to_fro_px
              cl ml    
              );
 
-@EXPORT = qw(ident diag ut lt inv mpow chsolve
-             lusolve symmeig svd  cl ml );
+@EXPORT = qw(ident diag ut lt inv mpow chsolve qrsolve
+             lucond lusolve symmeig svd  cl ml );
 
                                 # Redundant code 
 %EXPORT_TAGS = 
   (Raw => [ qw(
                mm_ diag_ ut_ lt_ inv_ mpow_ 
                chfac_ chsolve_ 
-               lufac_ lusolve_ 
-               qrfac_ qrsolve_
+               lufac_ lusolve_ lucond 
+               qrfac_ qrsolve_ qrcond
                symmeig_ svd_ 
                ident diag ut inv mpow chsolve
                lusolve symmeig svd  cl ml )
@@ -41,17 +43,15 @@ require DynaLoader;
   All => [qw( ident diag_ diag ut_ ut  lt_ lt mrand srand
              inv inv_ mpow mpow_ mm_
              chfac_ chsolve_ chsolve 
-             qrfac_ qrsolve_ 
-             lufac_  lusolve_ lusolve 
+             qrfac_ qrsolve_  qrsolve qrcond
+             lufac_  lusolve_ lusolve lucond 
              symmeig_ symmeig svd_ svd
              ppdl redd tomat gset_verbose to_fro_m to_fro_v to_fro_px
              cl ml )
              ]
                 );
 
-$VERSION = '0.01';
-
-bootstrap Meschach $VERSION;
+bootstrap PDL::Meschach $VERSION; 
 
 # Returns a pdl filled with random values in [0,1].
 # - If $_[0] is a pdl, mrand will fill it with random values in [0,1].
@@ -363,6 +363,77 @@ sub qrsolve_ {
 } 
 
 
+
+sub qrsolve {
+
+	if( ($#_>2) || (ref($_[0]) ne "PDL") || (ref($_[1])  ne "PDL") || 
+		 ( ($#_==2) && (ref($_[0]) ne "PDL") ) ){
+		print <<'EOD';
+
+  qrsolve  : resolution of a linear system "A.x = b" by QR method.
+
+Usage : 2 forms :
+
+*	($QR,$D,$x) = qrsolve( $b, $A );
+
+  $A is a non-singular square matrix, $b the right hand side.
+
+  $QR and $v represent the QR decomposition of a matrix.
+	$x is the solution.	
+
+*	($QR,$v,$x) = qrsolve( $b, $QR, $v );
+
+  Same, but $QR and $v need to have been previously computed, e.g.
+	by a previous call to qrsolve or qrfac_ .
+
+EOD
+		return 0;
+	}
+
+  my $b= shift @_;
+  my $x= zeroes(@{$$b{Dims}});
+
+  my ($QR, $v);
+
+  if( $#_ == 0 ) {
+
+    $QR = $_[0] + 0 ;
+    $v = double(zeroes(${$$QR{Dims}}[0]));
+
+    mp_qrfac( $QR, $v );
+
+  } elsif( $#_ == 1 ) {
+
+    $v = pop @_ ;
+    $QR = pop @_ ;
+
+  } else {
+    croak "Usage : qrsolve($b,$A) or qrsolve($b,$QR,$v)";
+  }
+
+  mp_qrsolve( $x, $b, $QR, $v );
+
+  return ( $QR, $v, $x );
+} 
+
+sub qrcond {
+  if( ($#_!=0) || (ref($_[0]) ne "PDL") ){
+    print <<'EOD';
+
+Usage : $condition = qrcond( $QR );
+
+  $QR represent (part of) the QR decomposition of a matrix, e.g. as
+	  returned by qrfac_() or qrsolve(). 
+  $condition is an estimate of the ratio of the greater eigenvalue and
+	  the smaller eigenvalue. 
+
+EOD
+	  return 0;
+	}
+	return mp_qrcond($_[0]);
+}
+
+
 # LU decomposition .
 # $_[0] is overwritten by LU,  $_[1] is pivot permutation
 sub lufac_ {
@@ -385,9 +456,50 @@ sub lusolve_ {
   mp_lusolve(@_);
 } 
 
+sub lucond {
+  if( ($#_!=1) || (ref($_[0]) ne "PDL") || (ref($_[1])  ne "PDL") ){
+    print <<'EOD';
+
+Usage : $condition = lucond( $LU , $P );
+  $LU and $P represent the LU decomposition of a matrix, e.g. as
+	  returned by lufac_() or lusolve() . 
+  $condition is an estimate of the ratio of the greater eigenvalue and
+	  the smaller eigenvalue. 
+
+EOD
+	  return 0;
+	}
+	return mp_lucond($_[0],$_[1]);
+}
+
 # ($LU,$Perm,$x) = lusolve($b,$A)
 # ($LU,$Perm,$x) = lusolve($b,$LU,$Perm)
+
 sub lusolve {
+
+	if( ($#_>2) || (ref($_[0]) ne "PDL") || (ref($_[1])  ne "PDL") || 
+		 ( ($#_==2) && (ref($_[0]) ne "PDL") ) ){
+		print <<'EOD';
+
+  lusolve  : resolution of a linear system "A.x = b" by LU method.
+
+Usage : 2 forms :
+
+*	($LU,$Perm,$x) = lusolve( $b, $A );
+
+  $A is a non-singular square matrix, $b the right hand side.
+
+  $LU and $Perm represent the LU decomposition of a matrix.
+	$x is the solution.	
+
+*	($LU,$Perm,$x) = lusolve( $b, $LU, $Perm );
+
+  Same, but $LU and $Perm need to have been previously computed, e.g.
+	by a previous call to lusolve or lufac_ .
+
+EOD
+		return 0;
+	}	
 
   my $b= shift @_;
   my $x= zeroes(@{$$b{Dims}});
@@ -543,7 +655,6 @@ sub ml {
 
 sub BEGIN {
 
-#   mp_smrand(0);
   1;
 }
 

@@ -88,12 +88,31 @@ void p_pdl(pdl *a) {
 	if(a==NULL)
 		croak(" p_pdl ( NULL ) ");
 
-	printf("p_pdl (a= %p )\n  a->sv=%p \n  a->datatype=%d \n"
-				 "  a->data=%p \n  a->nvals=%d \n  a->ndims=%d ",
-				 a,a->sv,a->datatype, a->data, a->nvals, a->ndims ); 
+	printf("######## p_pdl (address= %p )\n  sv=%p \n  datatype=%d \n"
+				 "  data=%p \n  nvals=%d \n  offs=%d  \n"
+				 "  ndims=%d \n  dims= ",
+				 a,a->sv,a->datatype, a->data, a->nvals, a->offs, a->ndims ); 
+
 	for(i=0;i<a->ndims;i++)
 		printf("%d ",a->dims[i]);
-	printf("\n");
+	
+	printf("\n  incs= ");
+	for(i=0;i<a->ndims;i++)
+		printf("%d ",a->incs[i]);
+
+	printf("\n  nthreaddims=%d",a->nthreaddims);
+	if(a->nthreaddims) { 
+
+		printf("\n  threaddims= ");
+		for(i=0;i<a->nthreaddims;i++)
+			printf("%d ", a->threaddims[i]);
+
+		printf("\n  threadincs= ");
+		for(i=0;i<a->nthreaddims;i++)
+			printf("%d ",a->threadincs[i]);
+
+	}
+	printf("\n########\n sv follows :");
 	
 	p_any(a->sv);
 

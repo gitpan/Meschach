@@ -15,13 +15,13 @@
 #ifndef _MACHINE_H
 #define _MACHINE_H 1
 
-#define const 
+/* #undef const */
 
 /* #undef MALLOCDECL */
 #define NOT_SEGMENTED 1
 #define HAVE_MEMORY_H 1
 /* #undef HAVE_COMPLEX_H */
-#define HAVE_MALLOC_H 1
+/* #undef HAVE_MALLOC_H */
 #define STDC_HEADERS 1
 #define HAVE_BCOPY 1
 #define HAVE_BZERO 1
@@ -57,8 +57,8 @@
 #endif /* HAVE_PROTOTYPES_IN_STRUCT */
 
 /* for basic or larger versions */
-#define COMPLEX 1
-#define SPARSE 1
+/* #undef COMPLEX */
+/* #undef SPARSE */
 
 /* for loop unrolling */
 /* #undef VUNROLL */
@@ -178,8 +178,8 @@
 #endif
 #endif
 
-#define F_MACHEPS 1.19209e-07
-#define D_MACHEPS 2.22045e-16
+#define F_MACHEPS 1.192093e-07
+#define D_MACHEPS 2.220446e-16
 
 #ifndef MACHEPS
 #if REAL == DOUBLE

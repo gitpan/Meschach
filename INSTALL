@@ -57,7 +57,7 @@ II)  PREPARING Meschach
        before being able to run 
 
 3)
-         test.pl 
+         make test
 
      which should say "ok" 28 times, and never "NOT ok".
 
@@ -74,6 +74,6 @@ NOTES :
 
 
 (*) There should be a more elegant way of preparing meschach-1.2. The
-procedure should be simplified in the future. (As soon as I master
+procedure should be simplified in the future. (It's time I mastered
 MakeMaker a little better).
 

@@ -10,7 +10,7 @@
 srcdir = .
 VPATH = .
 
-CC = acc
+CC = cc
 
 DEFS = -DHAVE_CONFIG_H
 LIBS =  -lm
@@ -165,14 +165,9 @@ list:
 	ls -lR `echo $(ALL_LISTS) | sed -e 's/\.o/.c/g'` \
 	`echo $(TORTURE) | sed -e 's/\.o/.c/g'` \
 	$(HLIST) $(OTHERS) MACHINES DOC \
+	|awk '/^$$/ {print};/^[-d]/ {printf("%s %s   %10d %s %s %s %s\n", \
+	 $$1,$$2,$$5,$$6,$$7,$$8,$$9)}; /^[^-d]/ {print}' \
 	> $(FLIST)
-
-#	ls -lR `echo $(ALL_LISTS) | sed -e 's/\.o/.c/g'` \
-#	`echo $(TORTURE) | sed -e 's/\.o/.c/g'` \
-#	$(HLIST) $(OTHERS) MACHINES DOC \
-#	|awk '/^$$/ {print};/^[-d]/ {printf("%s %s   %10d %s %s %s %s\n", \
-#	 $$1,$$2,$$5,$$6,$$7,$$8,$$9)}; /^[^-d]/ {print}' \
-#	> $(FLIST)
 
 
 

@@ -9,14 +9,17 @@
 #   MakeMaker Parameters:
 
 #	DEFINE => q[]
+#	DISTNAME => q[Meschach]
 #	INC => q[-Imeschach-1.2 -I../../PDL/Core]
 #	LIBS => [q[-Lmeschach-1.2 -lmes], q[-lm]]
 #	NAME => q[PDL::Meschach]
+#	NORECURS => q[true]
 #	OBJECT => q[mespdl.o p_funcs.o Meschach.o]
 #	PM => { Meschach.pm=>q[$(INST_LIBDIR)/Meschach.pm] }
 #	TYPEMAPS => [q[../../PDL/Core/typemap.pdl]]
 #	VERSION_FROM => q[Meschach.pm]
 #	clean => { FILES=>q[mespdl.o p_funcs.o Meschach.o] }
+#	dist => { COMPRESS=>q[gzip -9f] }
 
 # --- MakeMaker post_initialize section:
 
@@ -45,11 +48,11 @@ SO = so
 # --- MakeMaker constants section:
 AR_STATIC_ARGS = cr
 NAME = PDL::Meschach
-DISTNAME = PDL-Meschach
+DISTNAME = Meschach
 NAME_SYM = PDL_Meschach
-VERSION = 0.01
-VERSION_SYM = 0_01
-XS_VERSION = 0.01
+VERSION = 0.03
+VERSION_SYM = 0_03
+XS_VERSION = 0.03
 INST_BIN = ./blib/bin
 INST_EXE = ./blib/script
 INST_LIB = ./blib/lib
@@ -103,9 +106,11 @@ LINKTYPE = dynamic
 XS_FILES= Meschach.xs
 C_FILES = Meschach.c \
 	mespdl.c \
+	mespdl.old.c \
 	p_funcs.c
 O_FILES = Meschach.o \
 	mespdl.o \
+	mespdl.old.o \
 	p_funcs.o
 H_FILES = Meschach.h \
 	mespdl.h \
@@ -222,13 +227,14 @@ UNINSTALL =   $(PERL) -MExtUtils::Install \
 
 
 # --- MakeMaker dist section:
+# COMPRESS, gzip -9f
 
 DISTVNAME = $(DISTNAME)-$(VERSION)
 TAR  = tar
 TARFLAGS = cvf
 ZIP  = zip
 ZIPFLAGS = -r
-COMPRESS = compress
+COMPRESS = gzip -9f
 SUFFIX = .Z
 SHAR = shar
 PREOP = @$(NOOP)
@@ -260,10 +266,10 @@ SPLIT =
 # PDL::Meschach might depend on some other libraries:
 # See ExtUtils::Liblist for details
 #
-EXTRALIBS = -L/etienne/prog/perl/modules/PDL1.00/PDL/Meschach-0.01/meschach-1.2 -lmes
-LDLOADLIBS = -L/etienne/prog/perl/modules/PDL1.00/PDL/Meschach-0.01/meschach-1.2
-BSLOADLIBS = /etienne/prog/perl/modules/PDL1.00/PDL/Meschach-0.01/meschach-1.2/libmes.a
-LD_RUN_PATH = /etienne/prog/perl/modules/PDL1.00/PDL/Meschach-0.01/meschach-1.2
+EXTRALIBS = -L/etienne/prog/perl/modules/PDL-1.04/PDL/Meschach-0.03/meschach-1.2 -lmes
+LDLOADLIBS = -L/etienne/prog/perl/modules/PDL-1.04/PDL/Meschach-0.03/meschach-1.2
+BSLOADLIBS = /etienne/prog/perl/modules/PDL-1.04/PDL/Meschach-0.03/meschach-1.2/libmes.a
+LD_RUN_PATH = /etienne/prog/perl/modules/PDL-1.04/PDL/Meschach-0.03/meschach-1.2
 
 
 # --- MakeMaker const_cccmd section:
@@ -736,8 +742,8 @@ pm_to_blib: $(TO_INST_PM)
 #	AR_STATIC_ARGS => q[cr]
 #	BASEEXT => q[Meschach]
 #	BOOTDEP => q[]
-#	BSLOADLIBS => q[/etienne/prog/perl/modules/PDL1.00/PDL/Meschach-0.01/meschach-1.2/libmes.a]
-#	C => [q[Meschach.c], q[mespdl.c], q[p_funcs.c]]
+#	BSLOADLIBS => q[/etienne/prog/perl/modules/PDL-1.04/PDL/Meschach-0.03/meschach-1.2/libmes.a]
+#	C => [q[Meschach.c], q[mespdl.c], q[mespdl.old.c], q[p_funcs.c]]
 #	CC => q[gcc]
 #	CCCDLFLAGS => q[ ]
 #	CCDLFLAGS => q[ ]
@@ -750,11 +756,11 @@ pm_to_blib: $(TO_INST_PM)
 #	DEFINE => q[]
 #	DIR => []
 #	DIR_TARGET => { PACK001=HASH(...)=>{ $(INST_ARCHAUTODIR)=>q[3], $(INST_LIBDIR)=>q[1], $(INST_AUTODIR)=>q[1] } }
-#	DISTNAME => q[PDL-Meschach]
+#	DISTNAME => q[Meschach]
 #	DLBASE => q[$(BASEEXT)]
 #	DLEXT => q[so]
 #	DLSRC => q[dl_next.xs]
-#	EXTRALIBS => q[-L/etienne/prog/perl/modules/PDL1.00/PDL/Meschach-0.01/meschach-1.2 -lmes]
+#	EXTRALIBS => q[-L/etienne/prog/perl/modules/PDL-1.04/PDL/Meschach-0.03/meschach-1.2 -lmes]
 #	FIRST_MAKEFILE => q[Makefile]
 #	FULLEXT => q[PDL/Meschach]
 #	FULLPERL => q[/usr/bin/perl]
@@ -782,8 +788,8 @@ pm_to_blib: $(TO_INST_PM)
 #	LDDLFLAGS => q[-r -L/usr/local/lib]
 #	LDFLAGS => q[-u libsys_s -L/usr/local/lib]
 #	LDFROM => q[$(OBJECT)]
-#	LDLOADLIBS => q[-L/etienne/prog/perl/modules/PDL1.00/PDL/Meschach-0.01/meschach-1.2]
-#	LD_RUN_PATH => q[/etienne/prog/perl/modules/PDL1.00/PDL/Meschach-0.01/meschach-1.2]
+#	LDLOADLIBS => q[-L/etienne/prog/perl/modules/PDL-1.04/PDL/Meschach-0.03/meschach-1.2]
+#	LD_RUN_PATH => q[/etienne/prog/perl/modules/PDL-1.04/PDL/Meschach-0.03/meschach-1.2]
 #	LIBC => q[/lib/libsys_s.a]
 #	LIBPERL_A => q[libperl.a]
 #	LIBS => [q[-Lmeschach-1.2 -lmes], q[-lm]]
@@ -802,10 +808,11 @@ pm_to_blib: $(TO_INST_PM)
 #	NEEDS_LINKING => q[1]
 #	NOECHO => q[@]
 #	NOOP => q[sh -c true]
+#	NORECURS => q[true]
 #	OBJECT => q[mespdl$(OBJ_EXT) p_funcs$(OBJ_EXT) Meschach$(OBJ_EXT)]
 #	OBJ_EXT => q[.o]
 #	OPTIMIZE => q[-O]
-#	O_FILES => [q[Meschach.o], q[mespdl.o], q[p_funcs.o]]
+#	O_FILES => [q[Meschach.o], q[mespdl.o], q[mespdl.old.o], q[p_funcs.o]]
 #	PARENT_NAME => q[PDL::]
 #	PERL => q[/usr/bin/perl]
 #	PERLMAINCC => q[$(CC)]
@@ -830,13 +837,14 @@ pm_to_blib: $(TO_INST_PM)
 #	TOUCH => q[touch]
 #	TYPEMAPS => [q[../../PDL/Core/typemap.pdl]]
 #	UMASK_NULL => q[umask 0]
-#	VERSION => q[0.01]
+#	VERSION => q[0.03]
 #	VERSION_FROM => q[Meschach.pm]
-#	VERSION_SYM => q[0_01]
+#	VERSION_SYM => q[0_03]
 #	XS => { Meschach.xs=>q[Meschach.c] }
 #	XSPROTOARG => q[]
-#	XS_VERSION => q[0.01]
+#	XS_VERSION => q[0.03]
 #	clean => { FILES=>q[mespdl.o p_funcs.o Meschach.o] }
+#	dist => { COMPRESS=>q[gzip -9f] }
 
 # --- MakeMaker postamble section:
 
